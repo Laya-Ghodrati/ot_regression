@@ -13,8 +13,7 @@ import numpy as np
 from scipy.linalg import inv, sqrtm
 from scipy.optimize import minimize
 
-from .metrics import (empirical_loss, frobenius_error, rho_empirical,
-                      w2_gaussian)
+from .metrics import empirical_loss, frobenius_error, rho_empirical, w2_gaussian
 
 Array = np.ndarray
 

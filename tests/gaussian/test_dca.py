@@ -1,9 +1,11 @@
 import numpy as np
 
 from ot_regression.gaussian.dca import fit_gaussian_dca
-from ot_regression.gaussian.generate import (generate_input_matrices,
-                                             generate_noise_matrices,
-                                             generate_output_matrices)
+from ot_regression.gaussian.generate import (
+    generate_input_matrices,
+    generate_noise_matrices,
+    generate_output_matrices,
+)
 from ot_regression.gaussian.metrics import frobenius_error, is_spd
 
 
