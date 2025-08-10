@@ -13,7 +13,8 @@ import numpy as np
 from scipy.linalg import inv, sqrtm
 from scipy.optimize import minimize
 
-from .metrics import frobenius_error
+from .metrics import (empirical_loss, frobenius_error, rho_empirical,
+                      w2_gaussian)
 
 Array = np.ndarray
 
@@ -63,56 +64,52 @@ def fit_gaussian_dca(
     *,
     T_true: Optional[Array] = None,
     max_iter: int = 10,
-    tol: float = 1e-8,
     verbose: bool = False,
 ) -> Tuple[Array, Dict[str, Any]]:
     """
-    Fit the Gaussian OT regression map using DCA.
+    Fit Gaussian OT regression via DCA.
 
-    Convergence is based on parameter change ‖T_{k+1} - T_k‖_F, independent of ground truth.
-    If T_true is provided, we record error-to-true each iteration for diagnostics.
+    Runs for exactly `max_iter` iterations.
+    If T_true is provided, it is used only for tracking ρ(T, T_true) each iteration.
 
     Returns
     -------
-    T_hat : ndarray
+    T_hat : np.ndarray
         Estimated transport matrix.
     history : dict
         {
-          "delta_T": [‖T_{k+1}-T_k‖_F per iter],
-          "error_true": [‖T_k - T_true‖_F per iter] or None,
+          "error_true": [ρ(T_k, T_true) per iter] or None,
+          "loss": [empirical W2^2 loss per iter],
           "num_iter": int
         }
     """
+
     d = Ms[0].shape[0]
     Tk = np.eye(d)
 
-    delta_T: list[float] = []
-    error_true: Optional[list[float]] = [] if T_true is not None else None
+    # record iteration 0
+    error_true: Optional[list[float]] = None
+    if T_true is not None:
+        error_true = [rho_empirical(Tk, T_true, Ms)]
+
+    loss_history: list[float] = [empirical_loss(Tk, Ms, Ns)]
 
     for it in range(1, max_iter + 1):
         Gs = compute_G_matrices(Tk, Ms, Ns)
-        Tk_new = optimize_T(Ms, Gs, Tk)
-
-        # parameter-change stopping
-        delta = frobenius_error(Tk_new, Tk)
-        delta_T.append(delta)
+        Tk = optimize_T(Ms, Gs, Tk)
 
         if error_true is not None:
-            error_true.append(frobenius_error(Tk_new, T_true))  # type: ignore[arg-type]
+            error_true.append(rho_empirical(Tk, T_true, Ms))
+
+        loss = empirical_loss(Tk, Ms, Ns)
+        loss_history.append(loss)
 
         if verbose:
-            msg = f"[iter {it}] ΔT={delta:.3e}"
-            if error_true is not None:
-                msg += f", ‖T−T_true‖={error_true[-1]:.3e}"
-            print(msg)
-
-        Tk = Tk_new
-        if delta < tol:
-            break
+            print(f"[iter {it}] loss={loss:.3e}")
 
     history: Dict[str, Any] = {
-        "delta_T": delta_T,
         "error_true": error_true,
-        "num_iter": len(delta_T),
+        "loss": loss_history,
+        "num_iter": max_iter,
     }
     return Tk, history

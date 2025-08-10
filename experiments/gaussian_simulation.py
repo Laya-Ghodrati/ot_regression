@@ -76,9 +76,6 @@ def plot_3d_gaussians(Ms, Ns, samples_num: int, out_path: Path):
 def main(output_path: Path):
     output_path.mkdir(parents=True, exist_ok=True)
 
-    # Reproducibility
-    # (seed is set in __main__, so nothing here)
-
     # Experiment params
     N = 100
     d = 2
@@ -87,28 +84,26 @@ def main(output_path: Path):
     # Data
     T0, Qs, Ms, Ns = generate_dataset(N, d)
 
-    # Fit (new signature returns history dict)
-    T_hat, hist = fit_gaussian_dca(
-        Ms, Ns, T_true=T0, max_iter=max_iter, tol=1e-8, verbose=False
-    )
+    # Fit
+    T_hat, hist = fit_gaussian_dca(Ms, Ns, T_true=T0, max_iter=max_iter, verbose=False)
 
     # --- Convergence plots ---
-    # 1) Parameter change ΔT
+    # 1) Empirical loss
     plt.figure()
-    plt.plot(range(1, len(hist["delta_T"]) + 1), hist["delta_T"], marker="o")
+    plt.plot(range(1, len(hist["loss"]) + 1), hist["loss"], marker="o")
     plt.xlabel("Iteration")
-    plt.ylabel(r"$\Delta T = \|T_{k+1} - T_k\|_F$")
-    plt.title("DCA Convergence (parameter change)")
+    plt.ylabel(r"Empirical loss  $\frac{1}{2N}\sum_i W_2^2(T_k M_i T_k, N_i)$")
+    plt.title("DCA Convergence (empirical loss)")
     plt.grid(True)
-    plt.savefig(output_path / "convergence_deltaT.png", dpi=300)
+    plt.savefig(output_path / "convergence_loss.png", dpi=300)
 
-    # 2) Error to ground truth (if tracked)
+    # 2) Error to ground truth (ρ_empirical), if tracked
     if hist["error_true"] is not None:
         plt.figure()
         plt.plot(range(1, len(hist["error_true"]) + 1), hist["error_true"], marker="o")
         plt.xlabel("Iteration")
-        plt.ylabel(r"$\|\hat{T} - T_0\|_F$")
-        plt.title("Error to Ground Truth")
+        plt.ylabel(r"$\hat{\rho}^2(T_k, T_0)$")
+        plt.title("Error to Ground Truth (ρ empirical)")
         plt.grid(True)
         plt.savefig(output_path / "convergence_error_true.png", dpi=300)
 
@@ -130,7 +125,7 @@ def main(output_path: Path):
         output_path / "results.npz",
         T0=T0,
         T_hat=T_hat,
-        delta_T=np.array(hist["delta_T"]),
+        loss=np.array(hist["loss"]),
         error_true=(
             np.array(hist["error_true"]) if hist["error_true"] is not None else None
         ),

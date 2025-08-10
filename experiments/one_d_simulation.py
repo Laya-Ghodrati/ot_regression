@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from ot_regression.one_d.isotonic import compute_residual_maps, fit_isotonic_transport
+from ot_regression.one_d.isotonic import (compute_residual_maps,
+                                          fit_isotonic_transport)
 from ot_regression.one_d.kde import sample_to_cdf, sample_to_pdf
 from ot_regression.one_d.simulate import generate_dataset, map_T
 from ot_regression.one_d.transport import optimal_map

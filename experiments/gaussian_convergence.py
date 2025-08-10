@@ -22,12 +22,10 @@ import numpy as np
 from tqdm import tqdm
 
 from ot_regression.gaussian.dca import fit_gaussian_dca
-from ot_regression.gaussian.generate import (
-    generate_input_matrices,
-    generate_noise_matrices,
-    generate_output_matrices,
-    generate_true_transport,
-)
+from ot_regression.gaussian.generate import (generate_input_matrices,
+                                             generate_noise_matrices,
+                                             generate_output_matrices,
+                                             generate_true_transport)
 from ot_regression.gaussian.metrics import frobenius_error
 
 
@@ -62,7 +60,7 @@ def run_single(
         Ns = generate_output_matrices(T_true, Qs, Ms)
 
         T_hat, hist = fit_gaussian_dca(
-            Ms, Ns, T_true=T_true, max_iter=max_iter, tol=tol, verbose=verbose
+            Ms, Ns, T_true=T_true, max_iter=max_iter, verbose=verbose
         )
         if not hist.get("error_true"):
             return float(frobenius_error(T_hat, T_true)), None

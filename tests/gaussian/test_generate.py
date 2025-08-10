@@ -1,13 +1,11 @@
 import numpy as np
 
-from ot_regression.gaussian.generate import (
-    generate_dataset,
-    generate_input_matrices,
-    generate_noise_matrices,
-    generate_output_matrices,
-    generate_spd_matrix,
-    generate_true_transport,
-)
+from ot_regression.gaussian.generate import (generate_dataset,
+                                             generate_input_matrices,
+                                             generate_noise_matrices,
+                                             generate_output_matrices,
+                                             generate_spd_matrix,
+                                             generate_true_transport)
 from ot_regression.gaussian.metrics import is_spd
 
 
