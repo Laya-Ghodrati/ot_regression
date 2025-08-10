@@ -1,11 +1,13 @@
 import numpy as np
+
+from ot_regression.gaussian.dca import fit_gaussian_dca
 from ot_regression.gaussian.generate import (
     generate_input_matrices,
-    generate_output_matrices,
     generate_noise_matrices,
+    generate_output_matrices,
 )
 from ot_regression.gaussian.metrics import frobenius_error, is_spd
-from ot_regression.gaussian.dca import fit_gaussian_dca
+
 
 def test_fit_gaussian_dca_recovers_identity_when_T_true_is_I_and_Q_is_I():
     # Easiest case: T_true = I, Q_i = I. We should recover ~I.
@@ -16,7 +18,9 @@ def test_fit_gaussian_dca_recovers_identity_when_T_true_is_I_and_Q_is_I():
     Ms = generate_input_matrices(N, d)
     Ns = generate_output_matrices(T_true, Qs, Ms)
 
-    T_hat, hist = fit_gaussian_dca(Ms, Ns, T_true=T_true, max_iter=12, tol=1e-10, verbose=False)
+    T_hat, hist = fit_gaussian_dca(
+        Ms, Ns, T_true=T_true, max_iter=12, tol=1e-10, verbose=False
+    )
 
     # Convergence diagnostics present
     assert "delta_T" in hist and "error_true" in hist
@@ -25,6 +29,7 @@ def test_fit_gaussian_dca_recovers_identity_when_T_true_is_I_and_Q_is_I():
     assert frobenius_error(T_hat, T_true) < 1e-6
     # Still SPD
     assert is_spd(T_hat)
+
 
 def test_fit_gaussian_dca_runs_without_T_true_and_stops_by_parameter_change():
     d, N = 2, 5

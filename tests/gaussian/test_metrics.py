@@ -1,5 +1,7 @@
 import numpy as np
-from ot_regression.gaussian.metrics import is_spd, frobenius_error
+
+from ot_regression.gaussian.metrics import frobenius_error, is_spd
+
 
 def test_is_spd_true_and_false():
     # SPD (orthogonal * diag+ * orthogonal^T)
@@ -17,8 +19,9 @@ def test_is_spd_true_and_false():
     C = np.array([[1.0, 0.0], [0.0, -1.0]])
     assert not is_spd(C)
 
+
 def test_frobenius_error_basic():
-    A = np.array([[1.0, 2.0],[3.0, 4.0]])
-    B = np.array([[1.0, 0.0],[0.0, 0.0]])
+    A = np.array([[1.0, 2.0], [3.0, 4.0]])
+    B = np.array([[1.0, 0.0], [0.0, 0.0]])
     # ||A-B||_F = sqrt(0^2 + 2^2 + 3^2 + 4^2) = sqrt(29)
     assert np.isclose(frobenius_error(A, B), np.sqrt(29.0))

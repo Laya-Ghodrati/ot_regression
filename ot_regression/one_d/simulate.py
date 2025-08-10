@@ -1,7 +1,8 @@
 # ot_regression/one_d/simulate.py
 
 import math
-from typing import Tuple, List
+from typing import List, Tuple
+
 import numpy as np
 from numpy.typing import NDArray
 from scipy.stats import beta
@@ -74,8 +75,12 @@ def generate_pair(
     beta_params = rng.uniform(0.4, 0.6, 3)
     shift = rng.uniform(0, 1)
 
-    rx = np.mod(rand_mixture_beta(sample_per_dist, alpha_params, beta_params) + shift, 1.0)
-    rx2 = np.mod(rand_mixture_beta(sample_per_dist, alpha_params, beta_params) + shift, 1.0)
+    rx = np.mod(
+        rand_mixture_beta(sample_per_dist, alpha_params, beta_params) + shift, 1.0
+    )
+    rx2 = np.mod(
+        rand_mixture_beta(sample_per_dist, alpha_params, beta_params) + shift, 1.0
+    )
 
     rx = rx[(rx >= 0.0) & (rx <= 1.0)]
     rx2 = rx2[(rx2 >= 0.0) & (rx2 <= 1.0)]
@@ -94,8 +99,10 @@ def generate_pair(
 
 
 def generate_dataset(
-    num_pairs : int, samples_per_dist: int, grid_size: int, seed: int | None = None
-) -> Tuple[List[NDArray[np.float64]], List[NDArray[np.float64]], List[NDArray[np.float64]]]:
+    num_pairs: int, samples_per_dist: int, grid_size: int, seed: int | None = None
+) -> Tuple[
+    List[NDArray[np.float64]], List[NDArray[np.float64]], List[NDArray[np.float64]]
+]:
     """Generates N synthetic (rx, ry, T_true) triples."""
     rng = np.random.default_rng(seed)
     rxs, rys, pair_maps = [], [], []

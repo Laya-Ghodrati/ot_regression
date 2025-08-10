@@ -6,10 +6,13 @@ in Gaussian OT regression.
 """
 
 from __future__ import annotations
+
+from typing import Any, Dict, List, Optional, Tuple
+
 import numpy as np
-from typing import List, Tuple, Optional, Dict, Any
+from scipy.linalg import inv, sqrtm
 from scipy.optimize import minimize
-from scipy.linalg import sqrtm, inv
+
 from .metrics import frobenius_error
 
 Array = np.ndarray
@@ -107,5 +110,9 @@ def fit_gaussian_dca(
         if delta < tol:
             break
 
-    history: Dict[str, Any] = {"delta_T": delta_T, "error_true": error_true, "num_iter": len(delta_T)}
+    history: Dict[str, Any] = {
+        "delta_T": delta_T,
+        "error_true": error_true,
+        "num_iter": len(delta_T),
+    }
     return Tk, history

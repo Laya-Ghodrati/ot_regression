@@ -1,8 +1,9 @@
-import numpy as np
-from ot_regression.one_d.simulate import generate_dataset
-from ot_regression.one_d.kde import sample_to_cdf, sample_to_pdf
-from ot_regression.one_d.transport import optimal_map
 import matplotlib.pyplot as plt
+import numpy as np
+
+from ot_regression.one_d.kde import sample_to_cdf, sample_to_pdf
+from ot_regression.one_d.simulate import generate_dataset
+from ot_regression.one_d.transport import optimal_map
 
 
 def test_optimal_map_identity():
@@ -14,7 +15,6 @@ def test_optimal_map_identity():
     assert np.allclose(T, grid, atol=1e-12)
 
 
-
 def test_per_pair_consistency(grid):
     """
     For each pair, OT(F,G) should be close to the simulator's pair_map.
@@ -22,7 +22,7 @@ def test_per_pair_consistency(grid):
     """
     num_pairs = 12
     n = 15000
-    bw = n ** (-1/5)
+    bw = n ** (-1 / 5)
 
     Xs, Ys, pair_maps = generate_dataset(num_pairs, n, len(grid), seed=2024)
 
@@ -41,7 +41,7 @@ def test_per_pair_consistency(grid):
             fig, axes = plt.subplots(1, 2, figsize=(10, 4))
 
             # Left: PDFs
-           # Left: PDFs
+            # Left: PDFs
             pdf_x = sample_to_pdf(x, grid, bw)  # pass grid here
             pdf_y = sample_to_pdf(y, grid, bw)
             axes[0].plot(grid, pdf_x, label="PDF of X", color="red")

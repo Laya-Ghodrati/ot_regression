@@ -1,5 +1,7 @@
 import numpy as np
-from ot_regression.one_d.kde import sample_to_pdf, sample_to_cdf
+
+from ot_regression.one_d.kde import sample_to_cdf, sample_to_pdf
+
 
 def test_pdf_and_cdf_shapes(grid, bandwidth):
     rng = np.random.default_rng(0)
@@ -8,6 +10,7 @@ def test_pdf_and_cdf_shapes(grid, bandwidth):
     cdf = sample_to_cdf(samples, grid, bandwidth)
     assert pdf.shape == grid.shape
     assert cdf.shape == grid.shape
+
 
 def test_cdf_monotone_and_normalized(grid, bandwidth):
     rng = np.random.default_rng(1)

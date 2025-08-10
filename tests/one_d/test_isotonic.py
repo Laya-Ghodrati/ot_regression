@@ -1,14 +1,16 @@
 import numpy as np
-from ot_regression.one_d.simulate import generate_dataset, map_T
-from ot_regression.one_d.kde import sample_to_cdf
-from ot_regression.one_d.transport import optimal_map
+
 from ot_regression.one_d.isotonic import fit_isotonic_transport
+from ot_regression.one_d.kde import sample_to_cdf
+from ot_regression.one_d.simulate import generate_dataset, map_T
+from ot_regression.one_d.transport import optimal_map
+
 
 def test_T0_estimation_accuracy(grid):
     # Stronger settings for stability
     num_pairs = 100
     n = 10000
-    bw = n ** (-1/5)
+    bw = n ** (-1 / 5)
 
     Xs, Ys, _ = generate_dataset(num_pairs, n, len(grid), seed=42)
 

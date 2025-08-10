@@ -1,6 +1,8 @@
 import numpy as np
-from ot_regression.gaussian.ot_gaussian import gaussian_ot_map
+
 from ot_regression.gaussian.generate import generate_spd_matrix
+from ot_regression.gaussian.ot_gaussian import gaussian_ot_map
+
 
 def test_gaussian_ot_map_pushes_src_to_tgt():
     rng = np.random.default_rng(1)
@@ -13,6 +15,7 @@ def test_gaussian_ot_map_pushes_src_to_tgt():
 
     # The defining property: A Σ_src A^T ≈ Σ_tgt
     assert np.allclose(pushed, Sigma_tgt, atol=1e-6, rtol=1e-6)
+
 
 def test_gaussian_ot_map_identity_when_equal():
     d = 4

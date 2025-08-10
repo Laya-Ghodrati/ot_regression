@@ -1,15 +1,16 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
+from ot_regression.one_d.isotonic import compute_residual_maps, fit_isotonic_transport
+from ot_regression.one_d.kde import sample_to_cdf, sample_to_pdf
 from ot_regression.one_d.simulate import generate_dataset, map_T
-from ot_regression.one_d.kde import sample_to_pdf, sample_to_cdf
 from ot_regression.one_d.transport import optimal_map
-from ot_regression.one_d.isotonic import fit_isotonic_transport, compute_residual_maps
 
 # Parameters
-num_pairs = 100                  # number of (predictor, response) distribution pairs
-samples_per_dist = 1000          # number of samples per distribution
-grid_size = 100                  # number of evaluation points
-bandwidth = samples_per_dist ** (-1/5)  # KDE bandwidth
+num_pairs = 100  # number of (predictor, response) distribution pairs
+samples_per_dist = 1000  # number of samples per distribution
+grid_size = 100  # number of evaluation points
+bandwidth = samples_per_dist ** (-1 / 5)  # KDE bandwidth
 grid = np.linspace(0, 1, grid_size)
 
 # Generate synthetic dataset
@@ -53,7 +54,9 @@ for i in range(pairs_to_plot):
 
     # Right: Pair-level optimal map vs. true pair_map
     axes[1].plot(grid, pair_maps[i], color="green", lw=2, label="True pair_map")
-    axes[1].plot(grid, ot_maps[i], "--", color="orange", lw=1.5, label="Estimated optimal map")
+    axes[1].plot(
+        grid, ot_maps[i], "--", color="orange", lw=1.5, label="Estimated optimal map"
+    )
     axes[1].set_title(f"Pair {i+1} — Maps")
     axes[1].set_xlabel("x")
     axes[1].set_ylabel("T(x)")

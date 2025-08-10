@@ -5,9 +5,11 @@ Closed-form optimal transport maps between Gaussian measures.
 """
 
 from __future__ import annotations
+
+from typing import Tuple
+
 import numpy as np
 import scipy.linalg
-from typing import Tuple
 
 Array = np.ndarray
 

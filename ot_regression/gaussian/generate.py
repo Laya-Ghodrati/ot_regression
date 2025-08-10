@@ -6,14 +6,18 @@ SPD matrices, noise, true transport maps, and dataset construction.
 """
 
 from __future__ import annotations
+
+from typing import List, Tuple
+
 import numpy as np
 from scipy.stats import ortho_group
-from typing import List, Tuple
 
 Array = np.ndarray
 
 
-def generate_spd_matrix(d: int, eig_min: float = 0.1, eig_max: float = 10.0, seed: int | None = None) -> Array:
+def generate_spd_matrix(
+    d: int, eig_min: float = 0.1, eig_max: float = 10.0, seed: int | None = None
+) -> Array:
     """
     Generate a random symmetric positive definite (SPD) matrix of size (d, d).
 
@@ -39,14 +43,18 @@ def generate_spd_matrix(d: int, eig_min: float = 0.1, eig_max: float = 10.0, see
     return U @ Q @ U.T
 
 
-def generate_true_transport(d: int, eig_min: float = 0.1, eig_max: float = 3.0, seed: int | None = None) -> Array:
+def generate_true_transport(
+    d: int, eig_min: float = 0.1, eig_max: float = 3.0, seed: int | None = None
+) -> Array:
     """
     Generate a true SPD transport matrix T0 for Gaussian OT regression.
     """
     return generate_spd_matrix(d, eig_min=eig_min, eig_max=eig_max, seed=seed)
 
 
-def generate_noise_matrices(N: int, d: int, eig_min: float = 0.5, eig_max: float = 1.5) -> List[Array]:
+def generate_noise_matrices(
+    N: int, d: int, eig_min: float = 0.5, eig_max: float = 1.5
+) -> List[Array]:
     """
     Generate N SPD noise matrices Q_i.
 
@@ -62,7 +70,9 @@ def generate_input_matrices(N: int, d: int) -> List[Array]:
     return [generate_spd_matrix(d) for _ in range(N)]
 
 
-def generate_output_matrices(T0: Array, Qs: List[Array], Ms: List[Array]) -> List[Array]:
+def generate_output_matrices(
+    T0: Array, Qs: List[Array], Ms: List[Array]
+) -> List[Array]:
     """
     Generate N SPD response covariance matrices Σ_Y,i
     according to the regression model ν_i = Q_i # (T0 # μ_i).
@@ -87,7 +97,9 @@ def generate_output_matrices(T0: Array, Qs: List[Array], Ms: List[Array]) -> Lis
     return Ns
 
 
-def generate_dataset(N: int, d: int) -> Tuple[Array, List[Array], List[Array], List[Array]]:
+def generate_dataset(
+    N: int, d: int
+) -> Tuple[Array, List[Array], List[Array], List[Array]]:
     """
     Generate a complete Gaussian OT regression dataset.
 

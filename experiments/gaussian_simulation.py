@@ -5,14 +5,15 @@ Run Gaussian OT regression simulation with DCA and produce plots:
 - 3D Gaussian surfaces for a few sample pairs
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import numpy as np
 from scipy.stats import multivariate_normal
 
-from ot_regression.gaussian.generate import generate_dataset
 from ot_regression.gaussian.dca import fit_gaussian_dca
+from ot_regression.gaussian.generate import generate_dataset
 
 
 def plot_vector_field(M: np.ndarray, title: str, subtract_identity: bool = True):
@@ -87,7 +88,9 @@ def main(output_path: Path):
     T0, Qs, Ms, Ns = generate_dataset(N, d)
 
     # Fit (new signature returns history dict)
-    T_hat, hist = fit_gaussian_dca(Ms, Ns, T_true=T0, max_iter=max_iter, tol=1e-8, verbose=False)
+    T_hat, hist = fit_gaussian_dca(
+        Ms, Ns, T_true=T0, max_iter=max_iter, tol=1e-8, verbose=False
+    )
 
     # --- Convergence plots ---
     # 1) Parameter change ΔT
@@ -128,7 +131,9 @@ def main(output_path: Path):
         T0=T0,
         T_hat=T_hat,
         delta_T=np.array(hist["delta_T"]),
-        error_true=(np.array(hist["error_true"]) if hist["error_true"] is not None else None),
+        error_true=(
+            np.array(hist["error_true"]) if hist["error_true"] is not None else None
+        ),
         num_iter=np.array(hist["num_iter"]),
     )
     print(f"Results saved to: {output_path.resolve()}")

@@ -5,29 +5,29 @@ Gaussian OT regression convergence (configure at bottom).
 - Save per-d boxplots, a JSON of inputs, and error logs
 - Optional parallel execution (set with params['parallel'] = True/False)
 """
+
 from __future__ import annotations
 
-from pathlib import Path
-from datetime import datetime
 import json
-from typing import List, Dict, Tuple
 import os
+import random
 import time
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Tuple
 
-import random
-
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from tqdm import tqdm
 
-from ot_regression.gaussian.generate import (
-    generate_true_transport,
-    generate_input_matrices,
-    generate_output_matrices,
-    generate_noise_matrices,
-)
 from ot_regression.gaussian.dca import fit_gaussian_dca
+from ot_regression.gaussian.generate import (
+    generate_input_matrices,
+    generate_noise_matrices,
+    generate_output_matrices,
+    generate_true_transport,
+)
 from ot_regression.gaussian.metrics import frobenius_error
 
 
@@ -51,7 +51,9 @@ def run_single(
             T_true = generate_true_transport(d, eig_min=T_eig_min, eig_max=T_eig_max)
         elif transport_kind.lower() == "folded_normal":
             eigs = 2.0 * np.abs(np.random.normal(0.0, 1.0, size=d)) + 0.3
-            T_true = generate_true_transport(d, eig_min=float(np.min(eigs)), eig_max=float(np.max(eigs)))
+            T_true = generate_true_transport(
+                d, eig_min=float(np.min(eigs)), eig_max=float(np.max(eigs))
+            )
         else:
             return float("nan"), f"Invalid transport_kind: {transport_kind}"
 
@@ -59,7 +61,9 @@ def run_single(
         Ms = generate_input_matrices(N, d)
         Ns = generate_output_matrices(T_true, Qs, Ms)
 
-        T_hat, hist = fit_gaussian_dca(Ms, Ns, T_true=T_true, max_iter=max_iter, tol=tol, verbose=verbose)
+        T_hat, hist = fit_gaussian_dca(
+            Ms, Ns, T_true=T_true, max_iter=max_iter, tol=tol, verbose=verbose
+        )
         if not hist.get("error_true"):
             return float(frobenius_error(T_hat, T_true)), None
         return float(hist["error_true"][-1]), None
@@ -135,7 +139,10 @@ if __name__ == "__main__":
         os.environ.setdefault("MKL_NUM_THREADS", str(params["blas_threads"]))
 
     tag = params["tag"] or params["transport_kind"]
-    out_dir = Path(params["output_root"]) / f"gaussian_convergence_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
+    out_dir = (
+        Path(params["output_root"])
+        / f"gaussian_convergence_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}"
+    )
     out_dir.mkdir(parents=True, exist_ok=True)
 
     (out_dir / "inputs_used.json").write_text(json.dumps(params, indent=2))
@@ -150,11 +157,13 @@ if __name__ == "__main__":
                 tasks.append((d, N, params["base_seed"] + seed_counter))
                 seed_counter += 1
 
-    random.seed(params["base_seed"]) 
+    random.seed(params["base_seed"])
     random.shuffle(tasks)
-    
+
     total_tasks = len(tasks)
-    print(f"[start] total tasks: {total_tasks}; parallel={params['parallel']}; workers={params['workers']}")
+    print(
+        f"[start] total tasks: {total_tasks}; parallel={params['parallel']}; workers={params['workers']}"
+    )
 
     collected: List[Tuple[int, int, float, str | None]] = []
     error_log: List[str] = []
@@ -163,20 +172,25 @@ if __name__ == "__main__":
 
     if params["parallel"] and params["workers"] > 0:
         with ProcessPoolExecutor(max_workers=params["workers"]) as ex:
-            fut2meta = {ex.submit(
-                run_single,
-                d,
-                N,
-                seed,
-                transport_kind=params["transport_kind"],
-                T_eig_min=params["T_eig_min"],
-                T_eig_max=params["T_eig_max"],
-                max_iter=params["max_iter"],
-                tol=params["tol"],
-                verbose=params["verbose"],
-            ): (d, N) for (d, N, seed) in tasks}
+            fut2meta = {
+                ex.submit(
+                    run_single,
+                    d,
+                    N,
+                    seed,
+                    transport_kind=params["transport_kind"],
+                    T_eig_min=params["T_eig_min"],
+                    T_eig_max=params["T_eig_max"],
+                    max_iter=params["max_iter"],
+                    tol=params["tol"],
+                    verbose=params["verbose"],
+                ): (d, N)
+                for (d, N, seed) in tasks
+            }
 
-            for fut in tqdm(as_completed(fut2meta), total=total_tasks, desc="Simulations"):
+            for fut in tqdm(
+                as_completed(fut2meta), total=total_tasks, desc="Simulations"
+            ):
                 d, N = fut2meta[fut]
                 val, err = fut.result()
                 collected.append((d, N, val, err))
@@ -201,7 +215,12 @@ if __name__ == "__main__":
 
     elapsed_time = time.time() - start_time
 
-    results: Dict[Tuple[int, int], List[float]] = {(d, N): [] for d in params["d_values"] for N in params["N_values"] if not (d > params["skip_d_gt"] and N > params["skip_N_gt"])}
+    results: Dict[Tuple[int, int], List[float]] = {
+        (d, N): []
+        for d in params["d_values"]
+        for N in params["N_values"]
+        if not (d > params["skip_d_gt"] and N > params["skip_N_gt"])
+    }
     for d, N, val, _ in collected:
         results[(d, N)].append(val)
 
@@ -216,7 +235,9 @@ if __name__ == "__main__":
     if error_log:
         (out_dir / "error_log.txt").write_text("\n".join(error_log))
 
-    save_boxplots(results, params["d_values"], params["N_values"], out_dir, tag, dpi=params["dpi"])
+    save_boxplots(
+        results, params["d_values"], params["N_values"], out_dir, tag, dpi=params["dpi"]
+    )
 
     print(f"Saved results and figures to: {out_dir.resolve()}")
     print(f"Total runtime: {elapsed_time:.2f} seconds")
