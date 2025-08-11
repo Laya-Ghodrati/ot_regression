@@ -1,12 +1,13 @@
-# OT Regression — Simulations & Experiments (1D & Gaussian)
+# OT Regression: Simulations & Experiments (1D & Gaussian)
 
 This repository contains code for the simulation studies from the papers:
-- **Distribution-on-distribution regression with optimal transport** (1D case) by Laya Ghodrati and Victor M. Panaretos
-- **Transportation of measure regression in higher dimensions** (Gaussian case) by Laya Ghodrati and Victor M. Panaretos
+- **[Distribution-on-distribution regression with optimal transport (1D case)](https://academic.oup.com/biomet/article-abstract/109/4/957/6515608)** by Laya Ghodrati and Victor M. Panaretos
+- **[Transportation of measure regression in higher dimensions (Gaussian case)](https://arxiv.org/abs/2305.17503)** by Laya Ghodrati and Victor M. Panaretos
+
 
 The main package code is in the `ot_regression` subfolder, with:
-- `one_d/` — 1D simulations and utilities
-- `gaussian/` — Gaussian simulations, metrics, and DCA solver
+- `one_d/` -- 1D simulations and utilities
+- `gaussian/`-- Gaussian simulations, metrics, and DCA solver
 
 All experiment scripts from the papers are in the `experiments/` folder.
 
